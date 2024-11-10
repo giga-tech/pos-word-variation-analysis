@@ -20,7 +20,7 @@ python pos_word_frequency.py --input_file PATH_TO_INPUT_CSV --output_file PATH_T
 
 Run this script to analyze the words based on POS tags:
 ```bash
-python pos_tag_extractor.py --input_file INPUT_CSV --output_file OUTPUT_CSV ----pos_tag POS_TAG(EX- OTH,NNC..)
+python pos_tag_extractor.py --input_file INPUT_CSV --output_file OUTPUT_CSV --pos_tag POS_TAG(EX- OTH,NNC..)
 ```
 ### output
 * `word`: Specific POS tag word
