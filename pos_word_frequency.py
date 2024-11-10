@@ -9,7 +9,12 @@ def annotate_sentence(text, lemma, pos):
     words = text.split()
     return ' '.join([f"{word}[{pos}]" if word == lemma else word for word in words])
 
-def main(input_file, output_file):
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Process a CSV file to generate word frequency data.")
+    parser.add_argument('--input_file', type=str, required=True, help="Path to the input CSV file.")
+    parser.add_argument('--output_file', type=str, required=True, help="Path to the output CSV file.")
+    args = parser.parse_args()
+
     pos_mapping = {
         'ADJ': 'adjective',
         'NNP': 'noun',
@@ -32,7 +37,7 @@ def main(input_file, output_file):
     english_punct_pattern = r'[!"#$%&\'()*+,\-./:;<=>?@[\\]^_`{|}~0-9]'
     bangla_number_pattern = r'[\u09E6-\u09EF]'  # Pattern to match Bangla numbers
 
-    df = pd.read_csv(input_file)
+    df = pd.read_csv(args.input_file)
     lemma_data = defaultdict(lambda: defaultdict(lambda: {"frequency": 0, "text": set()}))
 
     for index, row in df.iterrows():
@@ -48,16 +53,15 @@ def main(input_file, output_file):
 
             mapped_pos = pos_mapping.get(original_pos, original_pos)
             lemma_word = bkit.lemmatizer.lemmatize(word)
-            # if want to lemmatize using POS
+            # Use lemma_word with POS if needed:
             # lemma_word = bkit.lemmatizer.lemmatize_word(word, pos)
-
 
             if re.search(bangla_punct_num_pattern, lemma_word) or re.search(english_punct_pattern, lemma_word) or re.search(bangla_number_pattern, lemma_word):
                 continue  
 
             modified_text = annotate_sentence(text, word, original_pos)
             
-            #use lemmma_word replace of word if you want to store lemma instead of word
+            # Store lemma_word instead of word if needed
             lemma_data[word][original_pos]["frequency"] += 1
             lemma_data[word][original_pos]["text"].add(modified_text)
 
@@ -80,12 +84,4 @@ def main(input_file, output_file):
             first_entry = False
 
     output_df = pd.DataFrame(output_data)
-    output_df.to_csv(output_file, index=False)
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process a CSV file to generate word frequency data.")
-    parser.add_argument('--input_file', type=str, required=True, help="Path to the input CSV file.")
-    parser.add_argument('--output_file', type=str, required=True, help="Path to the output CSV file.")
-    args = parser.parse_args()
-
-    main(args.input_file, args.output_file)
+    output_df.to_csv(args.output_file, index=False)
